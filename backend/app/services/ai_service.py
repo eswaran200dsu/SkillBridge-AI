@@ -3224,3 +3224,79 @@ async def match_resume_to_jd(resume_text: str, jd_text: str, resume_data=None):
         )
 
 # ===== FORCE LOCAL JD MATCH PATCH END =====
+# ===== FORCE LOCAL ROADMAP PATCH =====
+import os as _force_local_roadmap_os
+
+_ORIG_generate_roadmap_BACKUP = generate_roadmap
+
+def _build_local_demo_roadmap(skill_gaps):
+    skills = skill_gaps or ["HTML/CSS", "JavaScript", "React", "REST API", "GitHub", "Deployment"]
+
+    tasks = []
+    for week in range(1, 13):
+        skill = skills[(week - 1) % len(skills)]
+
+        if week <= 4:
+            difficulty = "Easy"
+        elif week <= 8:
+            difficulty = "Medium"
+        else:
+            difficulty = "Hard"
+
+        tasks.append({
+            "week": week,
+            "task": f"Learn {skill} and create one small project feature with proper notes.",
+            "skill": skill,
+            "difficulty": difficulty,
+            "estimated_hours": 8,
+            "resources": [
+                f"{skill} official documentation",
+                "YouTube tutorial",
+                "GitHub practice project"
+            ],
+            "milestone": week in [4, 8, 12]
+        })
+
+    return {
+        "duration_weeks": 12,
+        "daily_hours": 2,
+        "tasks": tasks,
+        "milestones": [
+            "Week 4: Complete basics and mini UI task",
+            "Week 8: Build API connected project feature",
+            "Week 12: Deploy final project and prepare interview explanation"
+        ],
+        "completion_criteria": "Complete weekly tasks, build project proof, and prepare resume-ready points.",
+        "source": "local_demo",
+        "warning": "Local roadmap generated without external AI API."
+    }
+
+async def generate_roadmap(
+    resume_text,
+    jd_text,
+    skill_gaps,
+    resume_data=None,
+    jd_analysis=None,
+):
+    force_local = str(
+        _force_local_roadmap_os.getenv(
+            "FORCE_LOCAL_ROADMAP",
+            _force_local_roadmap_os.getenv("FORCE_LOCAL_AI", "false")
+        )
+    ).strip().lower() in {"1", "true", "yes", "on"}
+
+    if force_local:
+        return _build_local_demo_roadmap(skill_gaps)
+
+    try:
+        return await _ORIG_generate_roadmap_BACKUP(
+            resume_text,
+            jd_text,
+            skill_gaps,
+            resume_data,
+            jd_analysis,
+        )
+    except Exception:
+        return _build_local_demo_roadmap(skill_gaps)
+
+# ===== FORCE LOCAL ROADMAP PATCH END =====
