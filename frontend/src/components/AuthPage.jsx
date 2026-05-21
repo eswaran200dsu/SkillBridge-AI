@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from 'react';
+import { supabase, isSupabaseReady } from '../lib/supabaseClient';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const defaultCredentials = {
@@ -233,19 +234,36 @@ export function AuthPage({ onLogin }) {
     setPassword(defaultCredentials[nextRole].password);
   };
 
-  const handleLogin = () => {
-    const valid =
-      username.trim() === defaultCredentials[role].username &&
-      password === defaultCredentials[role].password;
+ const handleLogin = async () => {
+  const valid =
+    username.trim() === defaultCredentials[role].username &&
+    password === defaultCredentials[role].password;
 
-    if (!valid) {
-      setError('Invalid credentials. Use the pre-filled demo login.');
-      return;
-    }
+  if (!valid) {
+    setError('Invalid credentials. Use the pre-filled demo login.');
+    return;
+  }
 
-    onLogin?.(role);
-  };
+  if (role === 'student' && isSupabaseReady && supabase) {
+    await supabase.from('resumes').upsert(
+      {
+        id: '00000000-0000-0000-0000-000000000001',
+        filename: 'student_demo_resume.pdf',
+        raw_text: 'Student logged in to SkillBridge AI demo.',
+        parsed_data: {
+          name: 'Student',
+          email: 'student@demo.com',
+          cgpa: 8.2,
+          skills: ['React', 'FastAPI', 'Python', 'SQL'],
+        },
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'id' }
+    );
+  }
 
+  onLogin?.(role);
+};
   return (
     <div style={{ 
       minHeight: '100vh', 
