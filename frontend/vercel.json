@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://skillbridge-ai-a0w0.onrender.com/api/$1"
+    }
+  ]
+}

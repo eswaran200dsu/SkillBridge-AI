@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="SkillBridge logo">
+  <rect x="0" y="0" width="24" height="24" rx="7" fill="#111111"/>
+  <circle cx="12" cy="12" r="2.2" fill="#ffffff"/>
+  <line x1="12" y1="3" x2="12" y2="6" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="12" y1="18" x2="12" y2="21" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="3" y1="12" x2="6" y2="12" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="18" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="5.25" y1="5.25" x2="7.4" y2="7.4" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="16.6" y1="16.6" x2="18.75" y2="18.75" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="5.25" y1="18.75" x2="7.4" y2="16.6" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+  <line x1="16.6" y1="7.4" x2="18.75" y2="5.25" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+</svg>
