@@ -1439,7 +1439,18 @@ def build_quiz_fallback_questions(
 
 async def match_resume_to_jd(resume_text: str, jd_text: str, resume_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Match resume to job description with focus areas"""
+    import os
+    force_local_jd = str(
+        os.getenv("FORCE_LOCAL_JD", os.getenv("FORCE_LOCAL_AI", "false"))
+    ).strip().lower() in {"1", "true", "yes", "on"}
 
+    if force_local_jd:
+        return _build_jd_match_fallback(
+            resume_text=resume_text,
+            jd_text=jd_text,
+            resume_data=resume_data,
+            reason="Local JD matcher enabled for demo"
+        )
     resume_context = _build_resume_context_for_jd(resume_text, resume_data, max_chars=720)
     cache_key = f"jd_match:v4:{_stable_hash(resume_context)}:{_stable_hash(jd_text[:900])}"
     cached_payload = await _cache_get_json(cache_key)
@@ -3172,3 +3183,44 @@ async def calculate_ats_score(
     )
 
 # ===== FORCE LOCAL ATS OVERRIDE PATCH END =====
+# ===== FORCE LOCAL JD MATCH PATCH =====
+import os as _force_local_jd_os
+
+if "ORIGINAL_MATCH_RESUME_TO_JD_BACKUP" not in globals():
+    ORIGINAL_MATCH_RESUME_TO_JD_BACKUP = match_resume_to_jd
+
+async def match_resume_to_jd(resume_text: str, jd_text: str, resume_data=None):
+    """
+    Local JD matcher for stable college demo.
+    Avoids external AI API failure and returns JD match result.
+    """
+    force_local = str(
+        _force_local_jd_os.getenv(
+            "FORCE_LOCAL_JD",
+            _force_local_jd_os.getenv("FORCE_LOCAL_AI", "false")
+        )
+    ).strip().lower() in {"1", "true", "yes", "on"}
+
+    if force_local:
+        return _build_jd_match_fallback(
+            resume_text=resume_text,
+            jd_text=jd_text,
+            resume_data=resume_data,
+            reason="FORCE_LOCAL_JD enabled"
+        )
+
+    try:
+        return await ORIGINAL_MATCH_RESUME_TO_JD_BACKUP(
+            resume_text=resume_text,
+            jd_text=jd_text,
+            resume_data=resume_data
+        )
+    except Exception as exc:
+        return _build_jd_match_fallback(
+            resume_text=resume_text,
+            jd_text=jd_text,
+            resume_data=resume_data,
+            reason=f"JD model failed: {exc}"
+        )
+
+# ===== FORCE LOCAL JD MATCH PATCH END =====
