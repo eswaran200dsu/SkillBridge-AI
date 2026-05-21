@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://skillbridge-ai-a0w0.onrender.com/api/$1"
+      "destination": "https://skillbridge-ai-backend-qttb.onrender.com/api/$1"
     }
   ]
 }
